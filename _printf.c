@@ -7,12 +7,12 @@
  */
 int _printf(const char *format, ...)
 {
-	int count;
+	int count, written;
 	char *buffer = (char *)malloc(BUFSIZE);
 	va_list args;
 
 	va_start(args, format);
-	count = 0;
+       	count = 0;
 	while (*format != '\0')
 	{
 		if (*format == '%')
@@ -50,7 +50,7 @@ int _printf(const char *format, ...)
 		else
 			buffer[count++] = *format;
 
-		if (count >= BUFFER_SIZE - 1)
+		if (count >= BUFSIZE - 1)
 			break;
 		format++;
 	}
