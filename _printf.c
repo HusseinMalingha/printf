@@ -3,18 +3,16 @@
 /**
  * _printf - a custom printf function
  * @format: format string
- *
  * Return: the number of characters printed
  */
 int _printf(const char *format, ...)
 {
 	int count;
-
+	char *buffer = (char *)malloc(BUFSIZE);
 	va_list args;
+
 	va_start(args, format);
-
 	count = 0;
-
 	while (*format != '\0')
 	{
 		if (*format == '%')
@@ -23,40 +21,42 @@ int _printf(const char *format, ...)
 			switch (*format)
 			{
 				case 'c':
-					{
-						int ch = va_arg(args, int);
-						count += _putchar(ch);
-						break;
-					}
+					written = snprintf(buffer + count,
+							BUFSIZE - count, "%c",
+							va_arg(args, int));
+					break;
 				case 's':
-					{
-						char *str = va_arg(args, char *);
-						count += printf("%s", str);
-						break;
-					}
+					written = snprintf(buffer + count,
+							BUFSIZE - count, "%s",
+							va_arg(args, char *));
+					break;
 				case 'd':
 				case 'i':
-					{
-						int num = va_arg(args, int);
-						count += printf("%d", num);
-						break;
-					}
+					written = snprintf(buffer + count,
+							BUFSIZE - count, "%d",
+							va_arg(args, int));
+					break;
 				case '%':
-					count += _putchar('%');
+					written = snprintf(buffer + count,
+							BUFSIZE - count, "%%");
 					break;
 				default:
-					count += _putchar('%');
-					count += _putchar(*format);
+					written = snprintf(buffer + count,
+							BUFSIZE - count, "%%%c",
+							*format);
 			}
+			count += (written < 0) ? 0 : written;
 		}
 		else
-		{
-			count += _putchar(*format);
-		}
+			buffer[count++] = *format;
 
+		if (count >= BUFFER_SIZE - 1)
+			break;
 		format++;
 	}
-
 	va_end(args);
+	buffer[count] = '\0';
+	printf("%s", buffer);
+	free(buffer);
 	return (count);
 }
